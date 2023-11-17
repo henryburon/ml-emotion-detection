@@ -1,7 +1,9 @@
 from PIL import Image
 import numpy as np
 import os
-# import sklearn
+import matplotlib.pyplot as plt
+from skimage import data, exposure
+from skimage.feature import hog
 
 #####################################################################################################
 # Load in the training data
@@ -73,7 +75,7 @@ for class_label in class_labels:
 # Convert training images to numpy arrays, and normalize
 #####################################################################################################
 
-x_angry = []
+x_angry = [] # 3995 images. Each image is a 48x48 array. i.e. for each image, there are 48 arrays, each with 48 values.
 
 for image in train_angry:
     image = np.array(image)/255 # Normalized
@@ -85,12 +87,16 @@ for image in train_happy:
     image = np.array(image)/255 # Normalized
     x_happy.append(image)
 
-# There are 3995 images (arrays) in x_angry. Each of these arrays has 48x48 features (2304 total)
+# There are 3995 images (arrays) in x_angry. Each of these arrays has 48x48 raw pixels/values (2304 total per image)
 # It's possible I may have to make each image into one long array of 2304 features
 
 #####################################################################################################
-# Feature extraction: Apply HOG Feature Extraction
+# Feature extraction: Apply HOG Feature Extraction/Image-Based Edge Histogram Feature, and Vectorize into 1-D format
 #####################################################################################################
+
+print(x_angry[4])
+
+
 
 # I don't think I should do the pixel thing... scikit hog function maybe?
 
@@ -110,20 +116,25 @@ May want to create a virtual environment if I'm installing all these packages, e
 
 """
 
-print(x_happy[0].shape)
-print(len(x_happy))
-
-# from skimage.io import imread
-# from skimage.transform import resize
-# from skimage.feature import hog
-# from skimage import exposure
-# import matplotlib.pyplot as plt
 
 
+image_np = x_angry[66]
 
+features, hog_image = hog(image_np, orientations=8, pixels_per_cell=(16, 16), cells_per_block=(1, 1), visualize=True)
 
+# Rescale histogram for better visualization
+hog_image_rescaled = exposure.rescale_intensity(hog_image, in_range=(0, 10))
 
+# Plot the original image and its corresponding HOG features
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 4), sharex=True, sharey=True)
 
+ax1.imshow(image, cmap=plt.cm.gray)
+ax1.set_title('Input Image')
+
+ax2.imshow(hog_image_rescaled, cmap=plt.cm.gray)
+ax2.set_title('HOG Features')
+
+plt.show()
 
 
 
