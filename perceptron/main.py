@@ -94,7 +94,7 @@ for image in train_happy:
 # Feature extraction: Apply HOG Feature Extraction/Image-Based Edge Histogram Feature, and Vectorize into 1-D format
 #####################################################################################################
 
-print(x_angry[4])
+# print(x_angry[4])
 
 
 
@@ -116,14 +116,24 @@ May want to create a virtual environment if I'm installing all these packages, e
 
 """
 
-
-
 image_np = x_angry[66]
 
 features, hog_image = hog(image_np, orientations=8, pixels_per_cell=(16, 16), cells_per_block=(1, 1), visualize=True)
 
+print(hog_image)
+print(hog_image.shape)
+print(len(hog_image))
+
+print(features)
+print(features.shape)
+print(len(features))
+
 # Rescale histogram for better visualization
 hog_image_rescaled = exposure.rescale_intensity(hog_image, in_range=(0, 10))
+
+print(hog_image_rescaled)
+print(hog_image_rescaled.shape)
+print(len(hog_image_rescaled))
 
 # Plot the original image and its corresponding HOG features
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 4), sharex=True, sharey=True)
