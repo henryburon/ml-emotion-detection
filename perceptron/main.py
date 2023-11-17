@@ -4,6 +4,8 @@ import os
 import matplotlib.pyplot as plt
 from skimage import data, exposure
 from skimage.feature import hog
+np.set_printoptions(threshold=np.inf) # Can use this to make it print out entire array
+
 
 #####################################################################################################
 # Load in the training data
@@ -94,14 +96,46 @@ for image in train_happy:
 # Feature extraction: Apply HOG Feature Extraction/Image-Based Edge Histogram Feature, and Vectorize into 1-D format
 #####################################################################################################
 
-# print(x_angry[4])
+# The 'features_list' will be a list of 3995 arrays, each of X terms. Each array will be the features for an individual x
+
+angry_features_list = []
+
+for image_array in x_angry:
+    features, hog_image = hog(image_array, orientations=8, pixels_per_cell=(12,12), cells_per_block=(1, 1), visualize=True)
+    angry_features_list.append(features)
+
+happy_features_list = []
+
+for image_array in x_happy:
+    features, hog_image = hog(image_array, orientations=8, pixels_per_cell=(12,12), cells_per_block=(1, 1), visualize=True)
+    happy_features_list.append(features)
+
+#####################################################################################################
+# 
+#####################################################################################################
 
 
 
-# I don't think I should do the pixel thing... scikit hog function maybe?
 
-# from skimage.feature import hog
-# ^^^ something like that, I think. May need to resize the images to use this...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 """
 What to do next.
 
@@ -116,35 +150,35 @@ May want to create a virtual environment if I'm installing all these packages, e
 
 """
 
-image_np = x_angry[66]
+# image_np = x_angry[50]
 
-features, hog_image = hog(image_np, orientations=8, pixels_per_cell=(16, 16), cells_per_block=(1, 1), visualize=True)
+# features, hog_image = hog(image_np, orientations=8, pixels_per_cell=(12,12), cells_per_block=(1, 1), visualize=True)
+# # print(hog_image)
+# # print(hog_image.shape)
+# # print(len(hog_image))
 
-print(hog_image)
-print(hog_image.shape)
-print(len(hog_image))
+# print("features:")
+# print(features)
+# print(features.shape)
+# print(len(features))
 
-print(features)
-print(features.shape)
-print(len(features))
+# # Rescale histogram for better visualization
+# hog_image_rescaled = exposure.rescale_intensity(hog_image, in_range=(0, 10))
 
-# Rescale histogram for better visualization
-hog_image_rescaled = exposure.rescale_intensity(hog_image, in_range=(0, 10))
+# # print(hog_image_rescaled)
+# # print(hog_image_rescaled.shape)
+# # print(len(hog_image_rescaled))
 
-print(hog_image_rescaled)
-print(hog_image_rescaled.shape)
-print(len(hog_image_rescaled))
+# # Plot the original image and its corresponding HOG features
+# fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 4), sharex=True, sharey=True)
 
-# Plot the original image and its corresponding HOG features
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 4), sharex=True, sharey=True)
+# ax1.imshow(image_np, cmap=plt.cm.gray)
+# ax1.set_title('Input Image')
 
-ax1.imshow(image, cmap=plt.cm.gray)
-ax1.set_title('Input Image')
+# ax2.imshow(hog_image_rescaled, cmap=plt.cm.gray)
+# ax2.set_title('HOG Features')
 
-ax2.imshow(hog_image_rescaled, cmap=plt.cm.gray)
-ax2.set_title('HOG Features')
-
-plt.show()
+# plt.show()
 
 
 
