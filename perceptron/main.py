@@ -9,13 +9,19 @@ from autograd import value_and_grad
 np.set_printoptions(threshold=np.inf) # Can use this to make it print out entire array
 
 from sklearn.linear_model import Perceptron
-from sklearn.multiclass import OneVsRestClassifier
+from sklearn.multiclass import OneVsRestClassifier, OneVsOneClassifier
 from sklearn.metrics import accuracy_score
 from sklearn.svm import SVC
 from sklearn.model_selection import GridSearchCV
 
+from sklearn.neural_network import MLPClassifier
+from sklearn.datasets import load_breast_cancer
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 
-max_images_per_class = 1200 # added this. I think 3000 images can get up to 61% accuracy
+
+max_images_per_class = 500 # added this. I think 3500 images can get up to 61% accuracy
 
 number = max_images_per_class # just using this as a variable for creating the y labeling lists
 
@@ -279,6 +285,8 @@ neutral_features_list = np.array(neutral_features_list)
 x_train = np.concatenate((happy_features_list,angry_features_list,neutral_features_list), axis=0)
 y_train = [1]*number + [2]*number + [3]*number
 
+
+
 # Create testing data
 
 happy_features_list2 = np.array(happy_features_list2) # Shape is (300, 128), so have 128 features for each of the 300 images
@@ -290,63 +298,40 @@ y_test = [1]*200 + [2]*200 + [3]*200
 
 
 
-# perceptron = Perceptron(max_iter=1000, random_state=42)
-# clf = OneVsRestClassifier(perceptron)
-# clf.fit(x_train,y_train)
+perceptron = Perceptron(max_iter=1000, random_state=42)
+clf = OneVsRestClassifier(perceptron)
+clf.fit(x_train,y_train)
 
 
-# # svc_model = SVC(kernel='linear', C=1.0)  # Example of SVC with a linear kernel and C=1.0
+# # # svc_model = SVC(kernel='linear', C=1.0)  # Example of SVC with a linear kernel and C=1.0
 
-# # # Fit the model on your training data
-# # svc_model.fit(x_train, y_train)
+# # # # Fit the model on your training data
+# # # svc_model.fit(x_train, y_train)
 
-# y_pred = clf.predict(x_test)
+y_pred = clf.predict(x_test)
 
-# # Evaluate accuracy on test data
 
-# accuracy = accuracy_score(y_test, y_pred) # y_test is the true y value...
-# print(f"Accuracy: {accuracy}")
 
-svm_model = SVC()
+# Calculate the accuracy of the model
+accuracy = accuracy_score(y_test, y_pred)
+print(f"Accuracy: {accuracy:.2f}")
 
-# Define a grid of hyperparameters to search
-param_grid = {
-    'C': [0.1, 1, 10],  # Regularization parameter
-    'kernel': ['linear', 'rbf'],  # Kernel type
-    'gamma': ['scale', 'auto']  # Kernel coefficient (only for 'rbf' kernel)
-}
 
-# Perform a grid search with cross-validation to find the best hyperparameters
-grid_search = GridSearchCV(svm_model, param_grid, cv=3, scoring='accuracy')
-grid_search.fit(x_train, y_train)
-
-# Get the best model found by the grid search
-best_svm_model = grid_search.best_estimator_
-
-# Train the best model on the entire training set
-best_svm_model.fit(x_train, y_train)
-
-# Predict using the trained model
-y_pred_svm = best_svm_model.predict(x_test)
-
-# Evaluate accuracy on test data
-accuracy_svm = accuracy_score(y_test, y_pred_svm)
-print(f"Accuracy using SVM: {accuracy_svm}")
+# Generate a classification report
+class_report = classification_report(y_test, y_pred)
+print("Classification Report:\n", class_report)
 
 
 
 
 
 
+# Access the learned weights
+weights = clf.estimators_[0].coef_  # Get weights for the first class
 
 
-
-
-
-
-
-
-
+print(len(weights[0])) # This is a list of the weights for each of the features. I think perceptron is the model that adds them all up? idk
+print(len(happy_features_list[0]))
 
 
 
