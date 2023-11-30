@@ -11,9 +11,11 @@ np.set_printoptions(threshold=np.inf) # Can use this to make it print out entire
 from sklearn.linear_model import Perceptron
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.metrics import accuracy_score
+from sklearn.svm import SVC
+from sklearn.model_selection import GridSearchCV
 
 
-max_images_per_class = 3000 # added this
+max_images_per_class = 1200 # added this. I think 3000 images can get up to 61% accuracy
 
 number = max_images_per_class # just using this as a variable for creating the y labeling lists
 
@@ -154,7 +156,7 @@ for image in test_neutral:
 ##########
 
 
-orientations_num = 8
+orientations_num = 12
 cells = 8
 block = 2
 
@@ -252,69 +254,84 @@ plt.title(f'HOG Features for Image {desired_image}')
 plt.show()"""
 
 #####################################################################################################
+# The goal with the manual implementation would be to train weights corresponding to each feature. Those weights are used in the model (linear combination) and
+# added up to give a value, which is then associated with a certain label.
+# The key for ML is to train a list of weights
+# The weights are in an ordered array, which, when applied to their corresponding feature, add up with the model to give a value
+# so the result from training an ML model is really just that list of weights
+#####################################################################################################
+
+#####################################################################################################
 # Start with 2-class classification
 #####################################################################################################
 
 # There are 300 arrays in happy_features_list. Each array has 288 features (when pixels_per_cell is (8,8))
 # It's a list of arrays
 
+
+
+# Create training data
+
 happy_features_list = np.array(happy_features_list) # Shape is (300, 128), so have 128 features for each of the 300 images
 angry_features_list = np.array(angry_features_list)
 neutral_features_list = np.array(neutral_features_list)
 
-# print(happy_features_list.shape)
-# print(angry_features_list.shape)
-
 x_train = np.concatenate((happy_features_list,angry_features_list,neutral_features_list), axis=0)
-
 y_train = [1]*number + [2]*number + [3]*number
 
-
-
-
-
-##### Testing stuff below
-
+# Create testing data
 
 happy_features_list2 = np.array(happy_features_list2) # Shape is (300, 128), so have 128 features for each of the 300 images
 angry_features_list2 = np.array(angry_features_list2)
 neutral_features_list2 = np.array(neutral_features_list2)
 
-# print(happy_features_list2.shape)
-# print(angry_features_list2.shape)
-
 x_test = np.concatenate((happy_features_list2,angry_features_list2,neutral_features_list2), axis=0)
-
 y_test = [1]*200 + [2]*200 + [3]*200
 
 
 
-# Initialize the multiclass Perceptron
-perceptron = Perceptron(max_iter=1000, random_state=42)  # You can adjust max_iter as needed
+# perceptron = Perceptron(max_iter=1000, random_state=42)
+# clf = OneVsRestClassifier(perceptron)
+# clf.fit(x_train,y_train)
 
 
-clf = OneVsRestClassifier(perceptron)
-clf.fit(x_train,y_train)
-y_pred = clf.predict(x_test)
+# # svc_model = SVC(kernel='linear', C=1.0)  # Example of SVC with a linear kernel and C=1.0
 
+# # # Fit the model on your training data
+# # svc_model.fit(x_train, y_train)
 
+# y_pred = clf.predict(x_test)
 
+# # Evaluate accuracy on test data
 
+# accuracy = accuracy_score(y_test, y_pred) # y_test is the true y value...
+# print(f"Accuracy: {accuracy}")
 
-# # Train the Perceptron using your training data
-# perceptron.fit(x_train, y_train)
+svm_model = SVC()
 
-# # Predict using the trained Perceptron on test data
-# y_pred = perceptron.predict(x_test)
+# Define a grid of hyperparameters to search
+param_grid = {
+    'C': [0.1, 1, 10],  # Regularization parameter
+    'kernel': ['linear', 'rbf'],  # Kernel type
+    'gamma': ['scale', 'auto']  # Kernel coefficient (only for 'rbf' kernel)
+}
 
+# Perform a grid search with cross-validation to find the best hyperparameters
+grid_search = GridSearchCV(svm_model, param_grid, cv=3, scoring='accuracy')
+grid_search.fit(x_train, y_train)
 
-# print(y_pred)
+# Get the best model found by the grid search
+best_svm_model = grid_search.best_estimator_
+
+# Train the best model on the entire training set
+best_svm_model.fit(x_train, y_train)
+
+# Predict using the trained model
+y_pred_svm = best_svm_model.predict(x_test)
 
 # Evaluate accuracy on test data
-accuracy = accuracy_score(y_test, y_pred)
-print(f"Accuracy: {accuracy}")
-
-
+accuracy_svm = accuracy_score(y_test, y_pred_svm)
+print(f"Accuracy using SVM: {accuracy_svm}")
 
 
 
