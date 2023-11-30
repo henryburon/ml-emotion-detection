@@ -9,10 +9,13 @@ from autograd import value_and_grad
 np.set_printoptions(threshold=np.inf) # Can use this to make it print out entire array
 
 from sklearn.linear_model import Perceptron
+from sklearn.multiclass import OneVsRestClassifier
 from sklearn.metrics import accuracy_score
 
 
-max_images_per_class = 500 # added this
+max_images_per_class = 3000 # added this
+
+number = max_images_per_class # just using this as a variable for creating the y labeling lists
 
 #####################################################################################################
 # Load in the training data
@@ -106,6 +109,12 @@ for image in train_happy:
     image = np.array(image)/255 # Normalized
     x_happy.append(image)
 
+x_neutral = []
+
+for image in train_neutral:
+    image = np.array(image)/255 # Normalized
+    x_neutral.append(image)
+
 # There are 3995 images (arrays) in x_angry. Each of these arrays has 48x48 raw pixels/values (2304 total per image)
 
 #####################################################################################################
@@ -124,14 +133,16 @@ for image in test_happy:
     image = np.array(image)/255 # Normalized
     x_happy2.append(image)
 
+x_neutral2 = []
 
-# print(len(x_angry2))
-# print(len(x_happy2))
+for image in test_neutral:
+    image = np.array(image)/255 # Normalized
+    x_neutral2.append(image)
 
 # There are 3995 images (arrays) in x_angry. Each of these arrays has 48x48 raw pixels/values (2304 total per image)
 
 #####################################################################################################
-# Feature extraction: Apply HOG Feature Extraction/Image-Based Edge Histogram Feature, and Vectorize into 1-D format
+# Feature extraction: Apply HOG Feature Extraction/Image-Based Edge Histogram Feature, and Vectorize into 1-D format (training)
 #####################################################################################################
 
 # The 'features_list' will be a list of 3995 arrays, each of X terms. Each array will be the features for an individual image.
@@ -142,11 +153,18 @@ for image in test_happy:
 
 ##########
 
+
+orientations_num = 8
+cells = 8
+block = 2
+
+
+
 angry_features_list = []
 angry_hog_image_list = []
 
 for image_array in x_angry:
-    features, hog_image = hog(image_array, orientations=12, pixels_per_cell=(6, 6), cells_per_block=(2, 2), visualize=True)
+    features, hog_image = hog(image_array, orientations=orientations_num, pixels_per_cell=(cells, cells), cells_per_block=(block, block), visualize=True)
     angry_features_list.append(features)
     angry_hog_image_list.append(hog_image)
 
@@ -156,17 +174,25 @@ happy_features_list = []
 happy_hog_image_list = []
 
 for image_array in x_happy:
-    features, hog_image = hog(image_array, orientations=12, pixels_per_cell=(6, 6), cells_per_block=(2, 2), visualize=True)
+    features, hog_image = hog(image_array, orientations=orientations_num, pixels_per_cell=(cells, cells), cells_per_block=(block, block), visualize=True)
     happy_features_list.append(features)
     happy_hog_image_list.append(hog_image)
 
 ##########
 
+neutral_features_list = []
+neutral_hog_image_list = []
+
+for image_array in x_neutral:
+    features, hog_image = hog(image_array, orientations=orientations_num, pixels_per_cell=(cells, cells), cells_per_block=(block, block), visualize=True)
+    neutral_features_list.append(features)
+    neutral_hog_image_list.append(hog_image)
+
 # The features list contains the extracted features.
 # The hog image list contains the visual representation of the HOG features
 
 #####################################################################################################
-# Feature extraction: Apply HOG Feature Extraction/Image-Based Edge Histogram Feature, and Vectorize into 1-D format
+# Feature extraction: Apply HOG Feature Extraction/Image-Based Edge Histogram Feature, and Vectorize into 1-D format (testing)
 #####################################################################################################
 
 # The 'features_list' will be a list of 3995 arrays, each of X terms. Each array will be the features for an individual image.
@@ -180,8 +206,9 @@ for image_array in x_happy:
 angry_features_list2 = []
 angry_hog_image_list2 = []
 
+
 for image_array in x_angry2:
-    features, hog_image = hog(image_array, orientations=12, pixels_per_cell=(6, 6), cells_per_block=(2, 2), visualize=True)
+    features, hog_image = hog(image_array, orientations=orientations_num, pixels_per_cell=(cells, cells), cells_per_block=(block, block), visualize=True)
     angry_features_list2.append(features)
     angry_hog_image_list2.append(hog_image)
 
@@ -191,11 +218,19 @@ happy_features_list2 = []
 happy_hog_image_list2 = []
 
 for image_array in x_happy2:
-    features, hog_image = hog(image_array, orientations=12, pixels_per_cell=(6, 6), cells_per_block=(2, 2), visualize=True)
+    features, hog_image = hog(image_array, orientations=orientations_num, pixels_per_cell=(cells, cells), cells_per_block=(block, block), visualize=True)
     happy_features_list2.append(features)
     happy_hog_image_list2.append(hog_image)
 
 ##########
+
+neutral_features_list2 = []
+neutral_hog_image_list2 = []
+
+for image_array in x_neutral2:
+    features, hog_image = hog(image_array, orientations=orientations_num, pixels_per_cell=(cells, cells), cells_per_block=(block, block), visualize=True)
+    neutral_features_list2.append(features)
+    neutral_hog_image_list2.append(hog_image)
 
 # The features list contains the extracted features.
 # The hog image list contains the visual representation of the HOG features
@@ -225,13 +260,14 @@ plt.show()"""
 
 happy_features_list = np.array(happy_features_list) # Shape is (300, 128), so have 128 features for each of the 300 images
 angry_features_list = np.array(angry_features_list)
+neutral_features_list = np.array(neutral_features_list)
 
-print(happy_features_list.shape)
-print(angry_features_list.shape)
+# print(happy_features_list.shape)
+# print(angry_features_list.shape)
 
-x_train = np.concatenate((happy_features_list,angry_features_list), axis=0)
+x_train = np.concatenate((happy_features_list,angry_features_list,neutral_features_list), axis=0)
 
-y_train = [1]*500 + [2]*500
+y_train = [1]*number + [2]*number + [3]*number
 
 
 
@@ -242,31 +278,37 @@ y_train = [1]*500 + [2]*500
 
 happy_features_list2 = np.array(happy_features_list2) # Shape is (300, 128), so have 128 features for each of the 300 images
 angry_features_list2 = np.array(angry_features_list2)
+neutral_features_list2 = np.array(neutral_features_list2)
 
-print(happy_features_list2.shape)
-print(angry_features_list2.shape)
+# print(happy_features_list2.shape)
+# print(angry_features_list2.shape)
 
-x_test = np.concatenate((happy_features_list2,angry_features_list2), axis=0)
+x_test = np.concatenate((happy_features_list2,angry_features_list2,neutral_features_list2), axis=0)
 
-y_test = [1]*200 + [2]*200
-
-# print(y_test)
-# print(len(y_test))
-
+y_test = [1]*200 + [2]*200 + [3]*200
 
 
 
 # Initialize the multiclass Perceptron
 perceptron = Perceptron(max_iter=1000, random_state=42)  # You can adjust max_iter as needed
 
-# Train the Perceptron using your training data
-perceptron.fit(x_train, y_train)
 
-# Predict using the trained Perceptron on test data
-y_pred = perceptron.predict(x_test)
+clf = OneVsRestClassifier(perceptron)
+clf.fit(x_train,y_train)
+y_pred = clf.predict(x_test)
 
 
-print(y_pred)
+
+
+
+# # Train the Perceptron using your training data
+# perceptron.fit(x_train, y_train)
+
+# # Predict using the trained Perceptron on test data
+# y_pred = perceptron.predict(x_test)
+
+
+# print(y_pred)
 
 # Evaluate accuracy on test data
 accuracy = accuracy_score(y_test, y_pred)
