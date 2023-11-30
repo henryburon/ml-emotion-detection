@@ -21,7 +21,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 
 
-max_images_per_class = 500 # added this. I think 3500 images can get up to 61% accuracy
+max_images_per_class = 3900 # added this. I think 3500 images can get up to 61% accuracy
 
 number = max_images_per_class # just using this as a variable for creating the y labeling lists
 
@@ -299,8 +299,8 @@ y_test = [1]*200 + [2]*200 + [3]*200
 
 
 perceptron = Perceptron(max_iter=1000, random_state=42)
-clf = OneVsRestClassifier(perceptron)
-clf.fit(x_train,y_train)
+classifier = OneVsRestClassifier(perceptron)
+classifier.fit(x_train,y_train)
 
 
 # # # svc_model = SVC(kernel='linear', C=1.0)  # Example of SVC with a linear kernel and C=1.0
@@ -308,7 +308,7 @@ clf.fit(x_train,y_train)
 # # # # Fit the model on your training data
 # # # svc_model.fit(x_train, y_train)
 
-y_pred = clf.predict(x_test)
+y_pred = classifier.predict(x_test)
 
 
 
@@ -327,255 +327,8 @@ print("Classification Report:\n", class_report)
 
 
 # Access the learned weights
-weights = clf.estimators_[0].coef_  # Get weights for the first class
+weights = classifier.estimators_[0].coef_  # Get weights for the first class
 
 
 print(len(weights[0])) # This is a list of the weights for each of the features. I think perceptron is the model that adds them all up? idk
 print(len(happy_features_list[0]))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-"""# Initialize the multiclass Perceptron
-perceptron = Perceptron(max_iter=1000, random_state=42)  # You can adjust max_iter as needed
-
-# Train the Perceptron using your training data
-perceptron.fit(x_train2, y_train2)
-
-# Predict using the trained Perceptron on test data
-y_pred = perceptron.predict(x_test2)
-
-# Evaluate accuracy on test data
-accuracy = accuracy_score(y_test2, y_pred)
-print(f"Accuracy: {accuracy}")"""
-
-
-"""
-# I believe orientations refers to kernels. More orientations would capture finer detail, but make computations more intense. 8 is good.
-# Pixels per cell determines the size of each cell (window?) over which the HOG is computed. Smaller number is finer detail.
-# Might want to make pixels per cell a bit smaller... like (6,6) or (4,4)
-
-#####################################################################################################
-# Assign labels to training data (start with just the angry and happy lists)
-#####################################################################################################
-
-# Combine the lists of features, and then make corresponding lists of labels
-
-# Assign "0" to angry, "1" to happy
-
-# x = np.array(angry_features_list +  happy_features_list)
-# y = np.array([0] * len(angry_features_list) + [1] * len(happy_features_list))
-
-x = np.array(angry_features_list)
-y = np.array([0] * len(angry_features_list))
-
-print(x.shape)
-print(y.shape)
-
-#####################################################################################################
-# Define multi-class perceptron and other necessary functions
-#####################################################################################################
-
-# compute C linear combinations of input point, one per classifier
-def model(x,w):
-    a = w[0] + np.dot(x.T,w[1:])
-    return a.T
-
-lam = 10**-5  # our regularization paramter 
-def multiclass_perceptron(w):        
-    # pre-compute predictions on all points
-    all_evals = model(x,w)
-    
-    # compute maximum across data points
-    a = np.max(all_evals,axis = 0)    
-
-    # compute cost in compact form using numpy broadcasting
-    b = all_evals[y.astype(int).flatten(),np.arange(np.size(y))]
-    cost = np.sum(a - b)
-    
-    # add regularizer
-    cost = cost + lam*np.linalg.norm(w[1:,:],'fro')**2
-    
-    # return average
-    return cost/float(np.size(y))
-
-def gradient_descent(g,alpha_choice,max_its,w):
-    # flatten the input function to more easily deal with costs that have layers of parameters
-    g_flat, unflatten, w = flatten_func(g, w) # note here the output 'w' is also flattened
-
-    # compute the gradient function of our input function - note this is a function too
-    # that - when evaluated - returns both the gradient and function evaluations (remember
-    # as discussed in Chapter 3 we always ge the function evaluation 'for free' when we use
-    # an Automatic Differntiator to evaluate the gradient)
-    gradient = value_and_grad(g_flat)
-
-    # run the gradient descent loop
-    weight_history = []      # container for weight history
-    cost_history = []        # container for corresponding cost function history
-    alpha = 0
-    for k in range(1,max_its+1):
-        # check if diminishing steplength rule used
-        if alpha_choice == 'diminishing':
-            alpha = 1/float(k)
-        else:
-            alpha = alpha_choice
-
-        # evaluate the gradient, store current (unflattened) weights and cost function value
-        cost_eval,grad_eval = gradient(w)
-        weight_history.append(unflatten(w))
-        cost_history.append(cost_eval)
-
-        # take gradient descent step
-        w = w - alpha*grad_eval
-
-    # collect final weights
-    weight_history.append(unflatten(w))
-    # compute final cost function value via g itself (since we aren't computing
-    # the gradient at the final step we don't get the final cost function value
-    # via the Automatic Differentiatoor)
-    cost_history.append(g_flat(w))
-    return weight_history,cost_history
-
-#####################################################################################################
-# Run
-#####################################################################################################
-
-# Assume num_features is the number of features extracted using HOG
-# Assume num_classes is the total number of classes
-num_features = len(angry_features_list[0])  # Assuming the length of the first feature set. same number of features for everything
-num_classes = 2  # Assuming two classes (angry and happy)
-
-initial_weights = np.zeros((num_features + 1, num_classes))
-
-
-# print(num_features)
-# print(initial_weights.shape)
-
-
-
-max_iterations = 1000  # Set the maximum number of iterations
-learned_weights, cost_history = gradient_descent(multiclass_perceptron, 0.01, max_iterations, initial_weights)
-
-
-
-
-"""
-# Having some issues with the dimensions...
-
-# Should probably go back and check that every array so far is what I want it to be...
-# Make sure I have the correct gradient descent
-# Go check the 9.2 on mac, a clue
-
-
-
-
-"""
-
-
-
-
-# g = multiclass_perceptron; w = 0.1*np.random.randn(3,3); max_its = 1000; alpha_choice = 10**(-1);
-# weight_history,cost_history = gradient_descent(g,alpha_choice,max_its,w)
-
-
-
-
-
-
-# image_np = x_angry[50]
-
-# features, hog_image = hog(image_np, orientations=8, pixels_per_cell=(12,12), cells_per_block=(1, 1), visualize=True)
-# # print(hog_image)
-# # print(hog_image.shape)
-# # print(len(hog_image))
-
-# print("features:")
-# print(features)
-# print(features.shape)
-# print(len(features))
-
-# # Rescale histogram for better visualization
-# hog_image_rescaled = exposure.rescale_intensity(hog_image, in_range=(0, 10))
-
-# # print(hog_image_rescaled)
-# # print(hog_image_rescaled.shape)
-# # print(len(hog_image_rescaled))
-
-# # Plot the original image and its corresponding HOG features
-# fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 4), sharex=True, sharey=True)
-
-# ax1.imshow(image_np, cmap=plt.cm.gray)
-# ax1.set_title('Input Image')
-
-# ax2.imshow(hog_image_rescaled, cmap=plt.cm.gray)
-# ax2.set_title('HOG Features')
-
-# plt.show()
-
-
-
-
-
-
-
-
-
-
-
-"""
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
