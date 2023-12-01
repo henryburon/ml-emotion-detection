@@ -442,30 +442,30 @@ y_test = (
 # print("Classification Report:\n", class_report)
 
 # Define the parameter grid to search through
-param_grid_svm = {
-    'C': [0.1, 1, 10, 100],  # Test different values for regularization parameter
-    'kernel': ['linear', 'poly', 'rbf', 'sigmoid'],  # Test different kernel functions
+param_grid_perceptron = {
+    'max_iter': [100, 500, 1000, 1500],  # Define different values to test
+    'tol': [1e-3, 1e-4, 1e-5],  # Change tolerance values
     # Add more hyperparameters as needed
 }
 
-# Create the SVM classifier
-svm = SVC()
+# Create the Perceptron classifier
+perceptron = Perceptron()
 
 # Perform Grid Search
-grid_search_svm = GridSearchCV(svm, param_grid=param_grid_svm, cv=5)
-grid_search_svm.fit(x_train, y_train)
+grid_search_perceptron = GridSearchCV(perceptron, param_grid=param_grid_perceptron, cv=5)
+grid_search_perceptron.fit(x_train, y_train)
 
 # Print the best parameters found
-print("Best Parameters for SVM:")
-print(grid_search_svm.best_params_)
+print("Best Parameters for Perceptron:")
+print(grid_search_perceptron.best_params_)
 
 # Get the best model
-best_svm = grid_search_svm.best_estimator_
+best_perceptron = grid_search_perceptron.best_estimator_
 
 # Evaluate the best model on the test set
-y_pred_svm = best_svm.predict(x_test)
-accuracy_svm = accuracy_score(y_test, y_pred_svm)
-print(f"Accuracy of SVM after Grid Search: {accuracy_svm:.2f}")
+y_pred_perceptron = best_perceptron.predict(x_test)
+accuracy_perceptron = accuracy_score(y_test, y_pred_perceptron)
+print(f"Accuracy of Perceptron after Grid Search: {accuracy_perceptron:.2f}")
 
 class_report = classification_report(y_test, y_pred_svm)
 print("Classification Report:\n", class_report)
