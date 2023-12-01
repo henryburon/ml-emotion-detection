@@ -21,8 +21,10 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 from sklearn.svm import LinearSVC
-
+from random import sample
 from sklearn.multiclass import *
+from sklearn.linear_model import LogisticRegression
+
 
 import time
 
@@ -37,7 +39,7 @@ start_time = time.time()
 # TRAINING data first
 #######################
 
-max_training_images_per_class = 800
+max_training_images_per_class = 4000
 
 train_parent_folder = "images/train/"
 class_labels = ["angry", "disgusted", "fearful", "happy", "neutral", "sad", "surprised"]
@@ -73,7 +75,7 @@ for class_label in class_labels:
 # TESTING data second
 #######################
 
-max_testing_images_per_class = 200
+max_testing_images_per_class = 1000
 
 test_parent_folder = "images/test/"
 class_labels = ["angry", "disgusted", "fearful", "happy", "neutral", "sad", "surprised"]
@@ -380,6 +382,12 @@ for image_array in x_surprised_test:
     surprised_features_list_test.append(features)
     surprised_hog_image_list_test.append(hog_image)
 
+
+
+# sample = np.array(surprised_features_list)
+# print(f"Shape of data: {sample.shape}")
+# for above, it's (# of data samples, # of features), such as (500, 1200)
+
 #####################################################################################################
 # Example for showing HOG features next to image.
 #####################################################################################################
@@ -406,24 +414,24 @@ plt.show()"""
 #######################
 x_train = np.concatenate(
     (
-        angry_features_list,
-        happy_features_list,
+        # angry_features_list,
+        # happy_features_list,
         neutral_features_list,
-        sad_features_list,
-        disgusted_features_list,
-        fearful_features_list,
+        # sad_features_list,
+        # disgusted_features_list,
+        # fearful_features_list,
         surprised_features_list,
 
     ),
     axis=0,
 )
 y_train = (
-    [0] * len(angry_features_list)
-    + [1] * len(happy_features_list)
-    + [2] * len(neutral_features_list)
-    + [3] * len(sad_features_list)
-    + [4] * len(disgusted_features_list)
-    + [5] * len(fearful_features_list)
+    # [0] * len(angry_features_list)
+    # + [1] * len(happy_features_list)
+     [2] * len(neutral_features_list)
+    # + [3] * len(sad_features_list)
+    # + [4] * len(disgusted_features_list)
+    # + [5] * len(fearful_features_list)
     + [6] * len(surprised_features_list)
 )
 
@@ -432,45 +440,45 @@ y_train = (
 #######################
 x_test = np.concatenate(
     (
-        angry_features_list_test,
-        happy_features_list_test,
+        # angry_features_list_test,
+        # happy_features_list_test,
         neutral_features_list_test,
-        sad_features_list_test,
-        disgusted_features_list_test,
-        fearful_features_list_test,
+        # sad_features_list_test,
+        # disgusted_features_list_test,
+        # fearful_features_list_test,
         surprised_features_list_test,
     ),
     axis=0,
 )
 y_test = (
-    [0] * len(angry_features_list_test)
-    + [1] * len(happy_features_list_test)
-    + [2] * len(neutral_features_list_test)
-    + [3] * len(sad_features_list_test)
-    + [4] * len(disgusted_features_list_test)
-    + [5] * len(fearful_features_list_test)
+    # [0] * len(angry_features_list_test)
+    # + [1] * len(happy_features_list_test)
+     [2] * len(neutral_features_list_test)
+    # + [3] * len(sad_features_list_test)
+    # + [4] * len(disgusted_features_list_test)
+    # + [5] * len(fearful_features_list_test)
     + [6] * len(surprised_features_list_test)
 )
 
 # Now, run the algorithm
 
-perceptron = Perceptron(max_iter=1000, random_state=35)
-classifier = OneVsRestClassifier(perceptron)
-classifier.fit(x_train,y_train)
+# perceptron = Perceptron(max_iter=1000, random_state=35)
+# classifier = OneVsRestClassifier(perceptron)
+# classifier.fit(x_train,y_train)
 
-y_pred = classifier.predict(x_test)
-# weights = classifier.estimators_[0].coef_
+# y_pred = classifier.predict(x_test)
+# # weights = classifier.estimators_[0].coef_
 
-# # This is the 1200 weights (1 for each feature)
-# print("Shape of Learned Weights:")
+# # # This is the 1200 weights (1 for each feature)
+# # print("Shape of Learned Weights:")
 
-# print(weights.shape)
+# # print(weights.shape)
 
-accuracy = accuracy_score(y_test, y_pred)
-print(f"Accuracy: {accuracy:.2f}")
+# accuracy = accuracy_score(y_test, y_pred)
+# print(f"Accuracy: {accuracy:.2f}")
 
-class_report = classification_report(y_test, y_pred)
-print("Classification Report:\n", class_report)
+# class_report = classification_report(y_test, y_pred)
+# print("Classification Report:\n", class_report)
 
 ##################################################################### GRID SEARCH PERCEPTRON
 
@@ -547,6 +555,27 @@ print("Classification Report:\n", class_report)"""
 
 
 ##################################################################### TOTAL TIME
+
+
+
+
+
+
+reg = 0.1
+# train a logistic regression model on the training set
+multi_model = LogisticRegression(C=1/reg, solver='lbfgs', multi_class='auto', max_iter=10000).fit(x_train, y_train)
+print (multi_model)
+
+y_pred = multi_model.predict(x_test)
+
+
+print(classification_report(y_test, y_pred))
+
+
+
+
+
+
 
 
 
