@@ -4,6 +4,12 @@ import numpy as np
 from keras.utils import to_categorical
 from keras.models import Sequential 
 from keras.layers import Conv2D, MaxPooling2D, Flatten, Dense
+import matplotlib.pyplot as plt
+import tensorflow as tf
+
+# Force TensorFlow to use CPU only
+tf.config.set_visible_devices([], 'GPU')
+
 # Prepare Data
 dataset_path_train = "/home/kashedd/Desktop/EE _475/FinalProject/archive/train"
 dataset_path_test = "/home/kashedd/Desktop/EE _475/FinalProject/archive/test"
@@ -109,6 +115,7 @@ for i in range(num_classes):
     model.summary()
     print("\n")
 
+
 #train and evaluate each binary classifier
 for i in range(num_classes):
     current_binary_classifier = binary_classifiers[i]
@@ -124,6 +131,33 @@ for i in range(num_classes):
         train_images, current_binary_labels_train,
         epochs = 20,
         batch_size = 32)
+
+    plt.plot(history.history['accuracy'], label='accuracy')
+    plt.plot(history.history['loss'], label='loss')
+    plt.xlabel('Epoch')
+    plt.legend()
+    plt.title(f"Training History for Binary Classifier {i + 1}")
+    plt.show()
+
+    print('1')
+    num_samps = 5
+    samp_ind = np.random.choice(len(test_images), num_samps, replace=False)
+    print('2')
+    samp_img = test_images[samp_ind]
+    samp_lab = test_labels[samp_ind]
+    print('3')
+    samp_bin = binary_classifier_labels_test[i][samp_ind]
+    print('check1')
+
+    predictions = model.predict(samp_img)
+    print('check2')
+
+    for j in range(num_samps):
+        print('check3')
+        plt.imshow(samp_img[j], cmap='gray')
+        print('check4')
+        plt.title(f"Actual: {samp_lab[j]}, Predicted: {round(predictions[j][0])}")
+        plt.show()
 
     eval_result = current_binary_classifier.evaluate(test_images, current_binary_labels_test)
     print(f"\nEvaluate results for binary classifier {i+1}:", eval_result)
