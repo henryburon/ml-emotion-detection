@@ -30,10 +30,10 @@ start_time = time.time()
 
 # Load in data from the .txt files
 # Each training data might be based on a different amount of samples and classes
-x_train = np.loadtxt('training_data/x_train_3k.txt')
-y_train = np.loadtxt('training_data/y_train_3k.txt')
-x_test = np.loadtxt('x_test.txt')
-y_test = np.loadtxt('y_test.txt')
+x_train = np.loadtxt('loaded_data/x_train_3k.txt')
+y_train = np.loadtxt('loaded_data/y_train_3k.txt')
+x_test = np.loadtxt('loaded_data/x_test_1k.txt')
+y_test = np.loadtxt('loaded_data/y_test_1k.txt')
 
 # Run the linear regression model
 reg = 0.5
@@ -47,10 +47,10 @@ y_pred = multi_model.predict(x_test)
 print(classification_report(y_test, y_pred))
 
 ### Save the linear regression model ###
-joblib.dump(multi_model, '7_class_trained_logistic_regression_model.pk1')
+joblib.dump(multi_model, 'logistic_regression/trained_model/2class_3ksample.pk1')
 
 # End timer
-weights4 = multi_model.coef_
+# weights4 = multi_model.coef_
 end_time = time.time()
 total_time = end_time - start_time
 print(f"Total time {total_time} seconds")
