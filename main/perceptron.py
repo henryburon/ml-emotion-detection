@@ -414,24 +414,24 @@ plt.show()"""
 #######################
 x_train = np.concatenate(
     (
-        # angry_features_list,
-        # happy_features_list,
+        angry_features_list,
+        happy_features_list,
         neutral_features_list,
-        # sad_features_list,
-        # disgusted_features_list,
-        # fearful_features_list,
+        sad_features_list,
+        disgusted_features_list,
+        fearful_features_list,
         surprised_features_list,
 
     ),
     axis=0,
 )
 y_train = (
-    # [0] * len(angry_features_list)
-    # + [1] * len(happy_features_list)
-     [2] * len(neutral_features_list)
-    # + [3] * len(sad_features_list)
-    # + [4] * len(disgusted_features_list)
-    # + [5] * len(fearful_features_list)
+    [0] * len(angry_features_list)
+    + [1] * len(happy_features_list)
+     + [2] * len(neutral_features_list)
+    + [3] * len(sad_features_list)
+    + [4] * len(disgusted_features_list)
+    + [5] * len(fearful_features_list)
     + [6] * len(surprised_features_list)
 )
 
@@ -440,23 +440,23 @@ y_train = (
 #######################
 x_test = np.concatenate(
     (
-        # angry_features_list_test,
-        # happy_features_list_test,
+        angry_features_list_test,
+        happy_features_list_test,
         neutral_features_list_test,
-        # sad_features_list_test,
-        # disgusted_features_list_test,
-        # fearful_features_list_test,
+        sad_features_list_test,
+        disgusted_features_list_test,
+        fearful_features_list_test,
         surprised_features_list_test,
     ),
     axis=0,
 )
 y_test = (
-    # [0] * len(angry_features_list_test)
-    # + [1] * len(happy_features_list_test)
-     [2] * len(neutral_features_list_test)
-    # + [3] * len(sad_features_list_test)
-    # + [4] * len(disgusted_features_list_test)
-    # + [5] * len(fearful_features_list_test)
+    [0] * len(angry_features_list_test)
+    + [1] * len(happy_features_list_test)
+     + [2] * len(neutral_features_list_test)
+    + [3] * len(sad_features_list_test)
+    + [4] * len(disgusted_features_list_test)
+    + [5] * len(fearful_features_list_test)
     + [6] * len(surprised_features_list_test)
 )
 
@@ -556,30 +556,25 @@ print("Classification Report:\n", class_report)"""
 
 ##################################################################### TOTAL TIME
 
-
-
-
+np.savetxt('x_train.txt', x_train)
+np.savetxt('y_train.txt', y_train)
+np.savetxt('x_test.txt', x_test)
+np.savetxt('y_test.txt', y_test)
 
 
 reg = 0.1
 # train a logistic regression model on the training set
 multi_model = LogisticRegression(C=1/reg, solver='lbfgs', multi_class='auto', max_iter=10000).fit(x_train, y_train)
-print (multi_model)
 
 y_pred = multi_model.predict(x_test)
-
-
 print(classification_report(y_test, y_pred))
 
+weights = multi_model.coef_
 
-
-
-
-
+np.savetxt('7classes_logistic_regression_weights.txt', weights)
 
 
 
 end_time = time.time()
 total_time = end_time - start_time
 print(f"Total time {total_time} seconds")
-
