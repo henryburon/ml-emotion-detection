@@ -2,5 +2,5 @@
 
 Machine Learning Model for Emotion Detection
 
-Perceptron vs SVM vs CNN
+Logistic Regression vs SVM vs CNN
 
