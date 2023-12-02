@@ -39,7 +39,7 @@ start_time = time.time()
 # TRAINING data first
 #######################
 
-max_training_images_per_class = 4000
+max_training_images_per_class = 3000
 
 train_parent_folder = "images/train/"
 class_labels = ["angry", "disgusted", "fearful", "happy", "neutral", "sad", "surprised"]
@@ -556,22 +556,22 @@ print("Classification Report:\n", class_report)"""
 
 ##################################################################### TOTAL TIME
 
-np.savetxt('x_train.txt', x_train)
-np.savetxt('y_train.txt', y_train)
-np.savetxt('x_test.txt', x_test)
-np.savetxt('y_test.txt', y_test)
+np.savetxt('x_train_3k.txt', x_train)
+np.savetxt('y_train_3k.txt', y_train)
+np.savetxt('x_test.txt', x_test) # testing data for verification
+np.savetxt('y_test.txt', y_test) # testing data for verification
 
 
-reg = 0.1
+reg = 0.5
 # train a logistic regression model on the training set
-multi_model = LogisticRegression(C=1/reg, solver='lbfgs', multi_class='auto', max_iter=10000).fit(x_train, y_train)
+multi_model = LogisticRegression(C=1/reg, solver='lbfgs', multi_class='ovr', max_iter=10000).fit(x_train, y_train)
 
 y_pred = multi_model.predict(x_test)
 print(classification_report(y_test, y_pred))
 
-weights = multi_model.coef_
+# weights = multi_model.coef_
 
-np.savetxt('7classes_logistic_regression_weights.txt', weights)
+# np.savetxt('7classes_logistic_regression_weights3.txt', weights)
 
 
 
