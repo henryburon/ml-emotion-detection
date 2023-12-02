@@ -22,13 +22,15 @@ from random import sample
 from sklearn.multiclass import *
 from sklearn.linear_model import LogisticRegression
 import time
+# from sklearn.externals import joblib
+import joblib
 
 # Start timer
 start_time = time.time()
 
 # Load data from the text files
-x_train = np.loadtxt('x_train_3k.txt')
-y_train = np.loadtxt('y_train_3k.txt')
+x_train = np.loadtxt('training_data/x_train_3k.txt')
+y_train = np.loadtxt('training_data/y_train_3k.txt')
 x_test = np.loadtxt('x_test.txt')
 y_test = np.loadtxt('y_test.txt')
 # weights = np.loadtxt('7classes_logistic_regression_weights.txt') # Shape is (7, 1200).
@@ -56,10 +58,10 @@ print(classification_report(y_test, y_pred))
 
 
 
-
+joblib.dump(multi_model, '7_class_trained_logistic_regression_model.pk1')
 # End timer and save weights
-weights2 = multi_model.coef_
-np.savetxt('7classes_logistic_regression_weights2.txt', weights2)
+weights4 = multi_model.coef_
+np.savetxt('7classes_logistic_regression_weights4.txt', weights4)
 end_time = time.time()
 total_time = end_time - start_time
 print(f"Total time {total_time} seconds")
