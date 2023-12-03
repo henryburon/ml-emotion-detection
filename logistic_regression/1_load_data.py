@@ -380,11 +380,6 @@ for image_array in x_surprised_test:
     surprised_hog_image_list_test.append(hog_image)
 
 
-
-# sample = np.array(surprised_features_list)
-# print(f"Shape of data: {sample.shape}")
-# for above, it's (# of data samples, # of features), such as (500, 1200)
-
 #####################################################################################################
 # Example for showing HOG features next to image.
 #####################################################################################################
@@ -414,22 +409,22 @@ x_train = np.concatenate(
         angry_features_list,
         happy_features_list,
         neutral_features_list,
-        # sad_features_list,
-        # disgusted_features_list,
-        # fearful_features_list,
-        # surprised_features_list,
+        sad_features_list,
+        disgusted_features_list,
+        fearful_features_list,
+        surprised_features_list,
 
     ),
     axis=0,
 )
 y_train = (
     [0] * len(angry_features_list)
-    + [1] * len(happy_features_list)
+     [1] * len(happy_features_list)
      + [2] * len(neutral_features_list)
-    # + [3] * len(sad_features_list)
-    # + [4] * len(disgusted_features_list)
-    # + [5] * len(fearful_features_list)
-    # + [6] * len(surprised_features_list)
+    + [3] * len(sad_features_list)
+    + [4] * len(disgusted_features_list)
+    + [5] * len(fearful_features_list)
+    + [6] * len(surprised_features_list)
 )
 
 
@@ -440,29 +435,29 @@ x_test = np.concatenate(
         angry_features_list_test,
         happy_features_list_test,
         neutral_features_list_test,
-        # sad_features_list_test,
-        # disgusted_features_list_test,
-        # fearful_features_list_test,
-        # surprised_features_list_test,
+        sad_features_list_test,
+        disgusted_features_list_test,
+        fearful_features_list_test,
+        surprised_features_list_test,
     ),
     axis=0,
 )
 y_test = (
     [0] * len(angry_features_list_test)
-    + [1] * len(happy_features_list_test)
+     + [1] * len(happy_features_list_test)
      + [2] * len(neutral_features_list_test)
-    # + [3] * len(sad_features_list_test)
-    # + [4] * len(disgusted_features_list_test)
-    # + [5] * len(fearful_features_list_test)
-    # + [6] * len(surprised_features_list_test)
+    + [3] * len(sad_features_list_test)
+    + [4] * len(disgusted_features_list_test)
+    + [5] * len(fearful_features_list_test)
+    + [6] * len(surprised_features_list_test)
 )
 
 #####################################################################
 
-np.savetxt('loaded_data/x_train_3k.txt', x_train)
-np.savetxt('loaded_data/y_train_3k.txt', y_train)
-np.savetxt('loaded_data/x_test_1k.txt', x_test)
-np.savetxt('loaded_data/y_test_1k.txt', y_test)
+np.savetxt('loaded_data/x_happy_neutral_surprised.txt', x_train)
+np.savetxt('loaded_data/y_happy_neutral_surprised.txt', y_train)
+# np.savetxt('loaded_data/x_test_1k.txt', x_test)
+# np.savetxt('loaded_data/y_test_1k.txt', y_test)
 
 
 """reg = 0.5

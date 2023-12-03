@@ -20,7 +20,8 @@ import joblib
 start_time = time.time()
 
 # Currently is loading in a model trained with 7 classes and max 3k training images per class
-loaded_model = joblib.load('logistic_regression/trained_model/2class_3ksamples_77%.pk1')
+# loaded_model = joblib.load('logistic_regression/trained_model/2class_3ksamples_77%.pk1')
+loaded_model = joblib.load('logistic_regression/trained_model/7class_3ksample_42%.pk1')
 
 emotion_indices = {
     0: 'angry',
