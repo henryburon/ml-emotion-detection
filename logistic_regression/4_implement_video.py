@@ -5,7 +5,7 @@ import numpy as np
 import joblib
 
 # Load your trained logistic regression model
-loaded_model = joblib.load('logistic_regression/trained_model/2class_3ksamples_77%.pk1')
+loaded_model = joblib.load('logistic_regression/trained_model/happy_neutral_surprised.pk1')
 
 # Mapping indices to emotions
 emotion_indices = {
