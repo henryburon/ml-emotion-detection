@@ -130,32 +130,31 @@ for i in range(num_classes):
     history = current_binary_classifier.fit(
         train_images, current_binary_labels_train,
         epochs = 20,
-        batch_size = 32)
+        batch_size = 32,
+        validation_data =(test_images, current_binary_labels_test))
 
+    validation_accuracy = history.history['val_accuracy']
+    
     plt.plot(history.history['accuracy'], label='accuracy')
-    plt.plot(history.history['loss'], label='loss')
+    plt.plot(validation_accuracy, label='Validation Accuracy')
+    plt.plot(history.history['loss'], label='loss' )
     plt.xlabel('Epoch')
     plt.legend()
     plt.title(f"Training History for Binary Classifier {i + 1}")
     plt.show()
 
-    print('1')
+
     num_samps = 5
     samp_ind = np.random.choice(len(test_images), num_samps, replace=False)
-    print('2')
     samp_img = test_images[samp_ind]
     samp_lab = test_labels[samp_ind]
-    print('3')
     samp_bin = binary_classifier_labels_test[i][samp_ind]
-    print('check1')
+
 
     predictions = model.predict(samp_img)
-    print('check2')
 
     for j in range(num_samps):
-        print('check3')
         plt.imshow(samp_img[j], cmap='gray')
-        print('check4')
         plt.title(f"Actual: {samp_lab[j]}, Predicted: {round(predictions[j][0])}")
         plt.show()
 
