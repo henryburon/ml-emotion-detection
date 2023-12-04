@@ -11,15 +11,12 @@ We developed 3 machine learning models for this task:
 
 ### Implement on pictures
 
-1. **Load your images**
-* Directory: logistic_regression/images/unknown/original
+1. **Load your images to:** logistic_regression/images/unknown/original
 
-2. **Run model**
-* Ensure that the "logistic_regression/trained_model/7class_3ksample_42%.pk1" model is loaded
-* Python file: 3_implement_picture.py
+2. **Run**: 3_implement_picture.py
+* Ensure that your desired model is loaded (e.g. logistic_regression/trained_model/7class_3ksample_42%.pk1)
 
-3. **View classified images**
-* They will appear in: logistic_regression/images/unknown/classified
+3. **View classified images in:** logistic_regression/images/unknown/classified
 
 ### Implement on live video
 
