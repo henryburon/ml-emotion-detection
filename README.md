@@ -20,9 +20,8 @@ We developed 3 machine learning models for this task:
 
 ### Implement on live video
 
-1. **Run model**
-* Ensure desired model is loaded
-* Python file: 4_implement_video.py
+1. **Run**: 4_implement_video.py
+* Ensure that your desired model is loaded (e.g. logistic_regression/trained_model/7class_3ksample_42%.pk1)
 
 
 
